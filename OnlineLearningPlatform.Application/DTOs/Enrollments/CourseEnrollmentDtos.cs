@@ -1,12 +1,14 @@
-﻿using OnlineLearningPlatform.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OnlineLearningPlatform.Application.DTOs.Enrollments;
+
+using OnlineLearningPlatform.Domain;
+using System.ComponentModel.DataAnnotations;
+
 
 public class CourseEnrollmentCreateDto
 {
     [Required] public int CourseId { get; set; }
-    [Required] public int UserId { get; set; }
 }
 
 public class CourseEnrollmentReadDto

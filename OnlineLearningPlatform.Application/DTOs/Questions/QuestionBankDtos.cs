@@ -1,4 +1,4 @@
-﻿using OnlineLearningPlatform.Models;
+﻿using OnlineLearningPlatform.Domain;
 using System.ComponentModel.DataAnnotations;
 
 namespace OnlineLearningPlatform.Application.DTOs.Questions;

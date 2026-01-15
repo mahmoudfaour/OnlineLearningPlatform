@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
 using System.Security.Cryptography;
 
@@ -9,6 +11,7 @@ namespace OnlineLearningPlatform.API;
 
 [ApiController]
 [Route("api/student/certificates")]
+[Authorize(Roles = "Student")]
 public class CertificatesController : ControllerBase
 {
     private readonly AppDbContext _db;

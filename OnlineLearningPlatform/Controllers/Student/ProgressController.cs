@@ -1,34 +1,49 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearningPlatform.Application.DTOs.Progress;
 using OnlineLearningPlatform.Infrastructure;
 
 namespace OnlineLearningPlatform.API;
 
 [ApiController]
 [Route("api/student/progress")]
+[Authorize(Roles = "Student")]
 public class ProgressController : ControllerBase
 {
     private readonly AppDbContext _db;
     public ProgressController(AppDbContext db) => _db = db;
 
-    // GET: api/student/progress/course/{courseId}/user/{userId}
-    [HttpGet("course/{courseId:int}/user/{userId:int}")]
-    public async Task<ActionResult<CourseProgressDto>> GetCourseProgress(int courseId, int userId)
+    private int CurrentUserId()
+        => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    // ✅ GET: api/student/progress/course/{courseId}
+    [HttpGet("course/{courseId:int}")]
+    [ProducesResponseType(typeof(CourseProgressDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<CourseProgressDto>> GetCourseProgress(int courseId)
     {
-        // must be enrolled (Active or Completed)
+        var userId = CurrentUserId();
+
+        // must be enrolled (any status except Dropped is typically fine; adjust if you want)
         var enrollment = await _db.CourseEnrollments.AsNoTracking()
             .FirstOrDefaultAsync(e => e.CourseId == courseId && e.UserId == userId);
 
         if (enrollment is null)
-            return BadRequest("User is not enrolled in this course.");
+            return BadRequest("You are not enrolled in this course.");
 
         // total lessons in course
         var totalLessons = await _db.Lessons.AsNoTracking()
             .CountAsync(l => l.CourseId == courseId);
 
-        // completed lessons for this user in this course
+        // completed lessons (safer query without relying on navigation property)
         var completedLessons = await _db.LessonCompletions.AsNoTracking()
-            .CountAsync(lc => lc.UserId == userId && lc.Lesson.CourseId == courseId);
+            .Join(_db.Lessons.AsNoTracking(),
+                  lc => lc.LessonId,
+                  l => l.Id,
+                  (lc, l) => new { lc, l })
+            .CountAsync(x => x.lc.UserId == userId && x.l.CourseId == courseId);
 
         var lessonsPercent = totalLessons == 0 ? 0 : (completedLessons * 100.0 / totalLessons);
 
@@ -38,9 +53,9 @@ public class ProgressController : ControllerBase
             .Select(q => new { q.Id, q.Title })
             .ToListAsync();
 
-        // quiz attempt history summary
         var quizIds = quizzes.Select(q => q.Id).ToList();
 
+        // attempt history summary
         var attempts = await _db.QuizAttempts.AsNoTracking()
             .Where(a => a.UserId == userId && quizIds.Contains(a.QuizId) && a.SubmittedAt != null)
             .GroupBy(a => a.QuizId)
@@ -66,13 +81,12 @@ public class ProgressController : ControllerBase
             };
         }).ToList();
 
-        // very simple overall: lessons only (you can later include quizzes weighting)
+        // overall percent (simple version: lessons only)
         var overall = lessonsPercent;
 
         return Ok(new CourseProgressDto
         {
             CourseId = courseId,
-            UserId = userId,
             TotalLessons = totalLessons,
             CompletedLessons = completedLessons,
             LessonsProgressPercent = Math.Round(lessonsPercent, 2),

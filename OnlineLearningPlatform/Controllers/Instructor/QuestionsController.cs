@@ -1,13 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Questions;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
 
 namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
+[Authorize(Roles = "Instructor,Admin")]
+
 public class QuestionsController : ControllerBase
 {
     private readonly AppDbContext _db;

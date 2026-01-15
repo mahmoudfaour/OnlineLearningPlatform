@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Users;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
 
 namespace OnlineLearningPlatform.API;

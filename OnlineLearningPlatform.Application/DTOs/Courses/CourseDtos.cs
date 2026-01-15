@@ -8,9 +8,6 @@ public class CourseCreateDto
     public string Title { get; set; } = string.Empty;
 
     public string? Description { get; set; }
-
-    [Required]
-    public int UserId { get; set; } // instructor/admin who created the course
 }
 
 public class CourseReadDto

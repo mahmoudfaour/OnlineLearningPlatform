@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="OnlineLearningPlatform.Application/OnlineLearningPlatform.Application.csproj" Id="35e4e562-c344-435b-a84c-23cdf5b0a6f7" />
   <Project Path="OnlineLearningPlatform.Domain/OnlineLearningPlatform.Domain.csproj" Id="6f6d9e34-5529-446c-abbf-687e6ef6db5e" />
   <Project Path="OnlineLearningPlatform.Infrastructure/OnlineLearningPlatform.Infrastructure.csproj" Id="cf0eeb60-71d9-4e4c-bd1a-2a3ba6b1a8b4" />

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OnlineLearningPlatform.Domain;
+namespace OnlineLearningPlatform.Domain.Models;
 
 public class LessonCompletion
 {

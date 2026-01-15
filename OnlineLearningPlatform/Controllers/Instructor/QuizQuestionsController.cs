@@ -1,14 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Quizzes;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
-using OnlineLearningPlatform.Models;
 
 namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
+[Authorize(Roles = "Instructor,Admin")]
+
 public class QuizQuestionsController : ControllerBase
 {
     private readonly AppDbContext _db;

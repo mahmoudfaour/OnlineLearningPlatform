@@ -1,19 +1,16 @@
-﻿namespace OnlineLearningPlatform;
+﻿namespace OnlineLearningPlatform.Application.DTOs.Progress;
 
 public class CourseProgressDto
 {
     public int CourseId { get; set; }
-    public int UserId { get; set; }
 
     public int TotalLessons { get; set; }
     public int CompletedLessons { get; set; }
-
-    public double LessonsProgressPercent { get; set; } // 0-100
+    public double LessonsProgressPercent { get; set; }
 
     public List<QuizAttemptSummaryDto> QuizHistory { get; set; } = new();
 
-    // Optional overall combining lessons + quizzes (simple version)
-    public double OverallPercent { get; set; } // 0-100
+    public double OverallPercent { get; set; }
 }
 
 public class QuizAttemptSummaryDto

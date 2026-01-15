@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
 namespace OnlineLearningPlatform.Infrastructure;
 
 public class AppDbContext : DbContext

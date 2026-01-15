@@ -1,4 +1,4 @@
-﻿namespace OnlineLearningPlatform.Models
+﻿namespace OnlineLearningPlatform.Domain
 {
 
     public enum UserRole { Student, Instructor, Admin }

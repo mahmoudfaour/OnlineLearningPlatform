@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Attempts;
-using OnlineLearningPlatform.Models;
-using OnlineLearningPlatform.Infrastructure;
 using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Domain.Models;
+using OnlineLearningPlatform.Infrastructure;
 
 
 
@@ -11,6 +12,8 @@ namespace OnlineLearningPlatform.API;
 
 [ApiController]
 [Route("api/student/quizzes")]
+[Authorize(Roles = "Student")]
+
 public class QuizAttemptsController : ControllerBase
 {
     private readonly AppDbContext _db;

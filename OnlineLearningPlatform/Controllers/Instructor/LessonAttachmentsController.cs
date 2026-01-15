@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Lessons;
 using OnlineLearningPlatform.Domain;
@@ -8,6 +9,8 @@ namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
+[Authorize(Roles = "Instructor,Admin")]
+
 public class LessonAttachmentsController : ControllerBase
 {
     private readonly AppDbContext _db;

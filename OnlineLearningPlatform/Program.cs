@@ -1,20 +1,23 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using OnlineLearningPlatform.API.Security;
 using OnlineLearningPlatform.Infrastructure;
 using System.Text;
 using System.Text.Json.Serialization;
+using OnlineLearningPlatform.API.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<CertificatePdfGenerator>();
+
 
 // -------------------- Controllers + JSON --------------------
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Enums as strings in request/response (e.g., "Instructor")
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
@@ -41,13 +44,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSection["Issuer"],
             ValidAudience = jwtSection["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-
-            // Optional but nice:
             ClockSkew = TimeSpan.FromMinutes(1)
         };
     });
 
 builder.Services.AddAuthorization();
+
+// -------------------- CORS --------------------
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+    );
+});
 
 // -------------------- Swagger + JWT Authorize Button --------------------
 builder.Services.AddEndpointsApiExplorer();
@@ -86,18 +97,30 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+
+
 // -------------------- Build App --------------------
 var app = builder.Build();
 
+// -------------------- Seed DB (Fresh Data) --------------------
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbSeeder.ResetAndSeedAsync(db, PasswordHasher.Hash);
+}
+
+
+// -------------------- Middleware --------------------
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseCors("Frontend");
+
 app.UseHttpsRedirection();
 
-// Auth order matters
 app.UseAuthentication();
 app.UseAuthorization();
 

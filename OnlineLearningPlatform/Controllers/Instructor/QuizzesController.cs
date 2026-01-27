@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearningPlatform.Application.DTOs.Questions;
 using OnlineLearningPlatform.Application.DTOs.Quizzes;
-using OnlineLearningPlatform.Domain;
 using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
 
@@ -10,14 +10,14 @@ namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
-[Authorize(Roles = "Instructor,Admin")]
-
 public class QuizzesController : ControllerBase
 {
     private readonly AppDbContext _db;
     public QuizzesController(AppDbContext db) => _db = db;
 
+    // ✅ Students CAN read quizzes list
     // GET: api/courses/{courseId}/quizzes
+    [Authorize(Roles = "Student,Instructor,Admin")]
     [HttpGet("courses/{courseId:int}/quizzes")]
     public async Task<ActionResult<List<QuizReadDto>>> GetByCourse(int courseId)
     {
@@ -35,14 +35,17 @@ public class QuizzesController : ControllerBase
                 Title = q.Title,
                 PassingScorePercent = q.PassingScorePercent,
                 TimeLimitSeconds = q.TimeLimitSeconds,
-                CreatedAt = q.CreatedAt
+                CreatedAt = q.CreatedAt,
+                IsFinal = q.IsFinal
             })
             .ToListAsync();
 
         return Ok(quizzes);
     }
 
+    // ✅ Students CAN read quiz details
     // GET: api/quizzes/{id}
+    [Authorize(Roles = "Student,Instructor,Admin")]
     [HttpGet("quizzes/{id:int}")]
     public async Task<ActionResult<QuizReadDto>> GetById(int id)
     {
@@ -57,6 +60,7 @@ public class QuizzesController : ControllerBase
                 PassingScorePercent = q.PassingScorePercent,
                 TimeLimitSeconds = q.TimeLimitSeconds,
                 CreatedAt = q.CreatedAt,
+                IsFinal = q.IsFinal,
                 QuizQuestions = q.QuizQuestions
                     .OrderBy(qq => qq.OrderIndex)
                     .Select(qq => new QuizQuestionReadDto
@@ -67,16 +71,25 @@ public class QuizzesController : ControllerBase
                         Points = qq.Points,
                         OrderIndex = qq.OrderIndex,
                         QuestionText = qq.Question.QuestionText,
-                        QuestionType = qq.Question.QuestionType
+                        QuestionType = qq.Question.QuestionType,
+                        // ✅ include options so your frontend can render them
+                        AnswerOptions = qq.Question.AnswerOptions
+                            .Select(o => new AnswerOptionReadDto
+                            {
+                                Id = o.Id,
+                                AnswerText = o.AnswerText
+                            })
+                            .ToList()
                     })
                     .ToList()
             })
             .FirstOrDefaultAsync();
 
-        return quiz is null ? NotFound() : Ok(quiz);
+        return quiz is null ? NotFound("Quiz not found.") : Ok(quiz);
     }
 
-    // POST: api/quizzes
+    // 🔒 Only Instructor/Admin can create/update/delete
+    [Authorize(Roles = "Instructor,Admin")]
     [HttpPost("quizzes")]
     public async Task<ActionResult<QuizReadDto>> Create([FromBody] QuizCreateDto dto)
     {
@@ -85,16 +98,6 @@ public class QuizzesController : ControllerBase
         var courseExists = await _db.Courses.AnyAsync(c => c.Id == dto.CourseId);
         if (!courseExists) return BadRequest("CourseId not found.");
 
-        if (dto.LessonId.HasValue)
-        {
-            var lesson = await _db.Lessons.AsNoTracking()
-                .FirstOrDefaultAsync(l => l.Id == dto.LessonId.Value);
-
-            if (lesson is null) return BadRequest("LessonId not found.");
-            if (lesson.CourseId != dto.CourseId)
-                return BadRequest("LessonId must belong to the same CourseId.");
-        }
-
         var quiz = new Quiz
         {
             CourseId = dto.CourseId,
@@ -102,13 +105,13 @@ public class QuizzesController : ControllerBase
             Title = dto.Title,
             PassingScorePercent = dto.PassingScorePercent,
             TimeLimitSeconds = dto.TimeLimitSeconds,
+            IsFinal = dto.IsFinal,
             CreatedAt = DateTime.UtcNow
         };
 
         _db.Quizzes.Add(quiz);
         await _db.SaveChangesAsync();
 
-        // return the quiz (empty QuizQuestions at creation)
         return CreatedAtAction(nameof(GetById), new { id = quiz.Id }, new QuizReadDto
         {
             Id = quiz.Id,
@@ -118,11 +121,12 @@ public class QuizzesController : ControllerBase
             PassingScorePercent = quiz.PassingScorePercent,
             TimeLimitSeconds = quiz.TimeLimitSeconds,
             CreatedAt = quiz.CreatedAt,
+            IsFinal = quiz.IsFinal,
             QuizQuestions = new()
         });
     }
 
-    // PUT: api/quizzes/{id}
+    [Authorize(Roles = "Instructor,Admin")]
     [HttpPut("quizzes/{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] QuizCreateDto dto)
     {
@@ -131,30 +135,18 @@ public class QuizzesController : ControllerBase
         var quiz = await _db.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
         if (quiz is null) return NotFound();
 
-        var courseExists = await _db.Courses.AnyAsync(c => c.Id == dto.CourseId);
-        if (!courseExists) return BadRequest("CourseId not found.");
-
-        if (dto.LessonId.HasValue)
-        {
-            var lesson = await _db.Lessons.AsNoTracking()
-                .FirstOrDefaultAsync(l => l.Id == dto.LessonId.Value);
-
-            if (lesson is null) return BadRequest("LessonId not found.");
-            if (lesson.CourseId != dto.CourseId)
-                return BadRequest("LessonId must belong to the same CourseId.");
-        }
-
         quiz.CourseId = dto.CourseId;
         quiz.LessonId = dto.LessonId;
         quiz.Title = dto.Title;
         quiz.PassingScorePercent = dto.PassingScorePercent;
         quiz.TimeLimitSeconds = dto.TimeLimitSeconds;
+        quiz.IsFinal = dto.IsFinal;
 
         await _db.SaveChangesAsync();
         return NoContent();
     }
 
-    // DELETE: api/quizzes/{id}
+    [Authorize(Roles = "Instructor,Admin")]
     [HttpDelete("quizzes/{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

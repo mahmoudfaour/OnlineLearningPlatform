@@ -1,0 +1,380 @@
+/* Simple branding overrides */
+.brand-link {
+ display: flex;
+  align-items: center;
+  justify-content: center;   /* center horizontally */
+  gap: 8px;                  /* space between icon & text */
+}
+
+.brand-link .brand-text {
+  line-height: 1;
+}
+
+/* Make course cards look consistent */
+.course-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.course-card .badge {
+  margin-right: 6px;
+}
+
+/* Improve content spacing */
+.content-wrapper {
+  padding-bottom: 20px;
+}
+
+/* Optional: nicer table spacing */
+.table td, .table th {
+  vertical-align: middle;
+}
+
+
+
+
+/* Clean user panel */
+.user-panel-clean{
+  text-align: center;
+  padding: 16px 12px 18px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* Avatar */
+.user-avatar{
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar i{
+  font-size: 1.8rem;
+  color: #fff;
+}
+
+/* Name */
+.user-name{
+  font-size: .95rem;
+  font-weight: 500;
+  color: rgba(255,255,255,.85);
+}
+
+
+
+/* ---------- Brand Colors ---------- */
+:root{
+  --brand: #3b82f6;       /* change once, affects everything */
+  --brand-dark: #1e40af;
+  --soft-bg: #f6f8fc;
+}
+
+/* Softer background */
+.content-wrapper{
+  background: var(--soft-bg);
+}
+
+/* Sidebar brand highlight */
+.brand-link{
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* Make cards look modern */
+.card{
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+}
+
+/* Better buttons */
+.btn{
+  border-radius: 10px;
+}
+
+/* Small-box (stats) more modern */
+.small-box{
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Table polish */
+.table{
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Better badges */
+.badge{
+  border-radius: 999px;
+  padding: .35rem .6rem;
+}
+
+/* Nice hover on course cards */
+.course-card{
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.course-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.10);
+}
+
+
+/* Sidebar spacing */
+.nav-sidebar .nav-link{
+  margin: 4px 12px !important;
+  width: auto !important;
+  display: block;
+  border-radius: 9px;            /* 👈 rounds edges */
+  transition: all .2s ease;       /* smooth animation */
+}
+
+/* Active (blue) item – modern look */
+.nav-sidebar .nav-link.active{
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(59,130,246,.45);
+}
+
+/* Hover effect (subtle) */
+.nav-sidebar .nav-link:hover{
+  background: rgba(255,255,255,.08);
+}
+
+/* Soft background */
+.content-wrapper { background: #f6f8fc; }
+
+/* Nice cards everywhere */
+.card { border:0; border-radius:14px; box-shadow:0 10px 25px rgba(0,0,0,.06); }
+.card-header { background: transparent; border-bottom: 1px solid rgba(0,0,0,.06); }
+
+/* Better buttons and badges */
+.btn { border-radius: 10px; }
+.badge { border-radius: 999px; padding: .35rem .6rem; }
+
+
+
+
+
+/* Modern progress row layout */
+.progress-modern{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+/* Modern progress bar */
+.progress.modern{
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.06);
+  flex:1;
+  overflow:hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
+}
+
+.progress.modern .progress-bar{
+  border-radius: 999px;
+}
+
+/* Percent label */
+.progress-label{
+  min-width: 48px;
+  text-align: right;
+  font-weight: 600;
+  color: rgba(0,0,0,.65);
+}
+
+
+
+
+
+
+
+/* Modern course cover card */
+.course-card{
+  overflow: hidden;
+}
+
+.course-cover{
+  height: 140px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Dark overlay for text readability */
+.course-cover::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.65));
+}
+
+/* Title on image */
+.course-cover .course-title{
+  position:absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 12px;
+  z-index: 2;
+  color:#fff;
+  font-weight:700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+/* Minimal meta row */
+.course-meta{
+  display:flex;
+  gap:10px;
+  flex-wrap: wrap;
+  color: rgba(0,0,0,.6);
+  font-size: .9rem;
+  margin-top: 10px;
+}
+
+.course-meta i{ opacity:.8; }
+
+/* Compact body spacing */
+.course-body-compact{
+  padding: 14px 16px 12px 16px;
+}
+
+/* Footer buttons modern */
+.course-actions{
+  display:flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px 16px 16px;
+}
+
+.course-actions .btn{
+  flex:1;
+  border-radius: 12px;
+  padding: .45rem .75rem;
+}
+
+/* Optional: make details button “outline” style */
+.btn-course-outline{
+  background: rgba(59,130,246,.08);
+  border: 1px solid rgba(59,130,246,.25);
+  color: #2563eb;
+}
+.btn-course-outline:hover{
+  background: rgba(59,130,246,.14);
+  color: #1d4ed8;
+}
+
+/* Optional: smaller badges */
+.badge-light{
+  background: rgba(0,0,0,.06);
+  color: rgba(0,0,0,.75);
+}
+
+
+
+
+/* ================================
+   Modern Certificate Cards
+================================ */
+.certificate-card{
+  overflow: hidden;
+  position: relative;
+}
+
+/* Background cover area */
+.certificate-cover{
+  height: 140px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Overlay for readability */
+.certificate-cover::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.70));
+}
+
+/* Title on the cover */
+.certificate-title{
+  position:absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 2;
+  color:#fff;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+/* Small badge on the cover */
+.certificate-badge{
+  position:absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.25);
+  color:#fff;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  backdrop-filter: blur(6px);
+}
+
+/* Compact body */
+.certificate-body{
+  padding: 14px 16px 10px 16px;
+}
+
+/* 2-column info grid */
+.certificate-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  color: rgba(0,0,0,.72);
+  font-size: .92rem;
+}
+.certificate-grid b{
+  color: rgba(0,0,0,.88);
+}
+
+/* Footer buttons */
+.certificate-actions{
+  display:flex;
+  gap: 10px;
+  padding: 12px 16px 16px 16px;
+}
+.certificate-actions .btn{
+  flex: 1;
+  border-radius: 12px;
+  padding: .45rem .75rem;
+}
+
+/* Outline primary style */
+.btn-soft-primary{
+  background: rgba(59,130,246,.10);
+  border: 1px solid rgba(59,130,246,.25);
+  color: #2563eb;
+}
+.btn-soft-primary:hover{
+  background: rgba(59,130,246,.16);
+  color: #1d4ed8;
+}
+
+
+
+
+
+

@@ -25,6 +25,8 @@ public class Quiz
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public bool IsFinal { get; set; } = false;
+
     public ICollection<QuizQuestion> QuizQuestions { get; set; } = new List<QuizQuestion>();
     public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();
 }

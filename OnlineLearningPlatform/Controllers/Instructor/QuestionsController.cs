@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Questions;
+using OnlineLearningPlatform.Application.DTOs.Quizzes;
 using OnlineLearningPlatform.Domain;
 using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
@@ -50,31 +51,52 @@ public class QuestionsController : ControllerBase
 
     // GET: api/questions/{id}
     [HttpGet("questions/{id:int}")]
-    public async Task<ActionResult<QuestionReadDto>> GetById(int id)
+    public async Task<ActionResult<QuizReadDto>> GetById(int id)
     {
-        var question = await _db.Questions.AsNoTracking()
+        var quiz = await _db.Quizzes.AsNoTracking()
             .Where(q => q.Id == id)
-            .Select(q => new QuestionReadDto
+            .Select(q => new QuizReadDto
             {
                 Id = q.Id,
-                QuestionBankId = q.QuestionBankId,
-                QuestionText = q.QuestionText,
-                QuestionType = q.QuestionType,
-                Explanation = q.Explanation,
-                AnswerOptions = q.AnswerOptions
-                    .Select(a => new AnswerOptionReadDto
+                CourseId = q.CourseId,
+                LessonId = q.LessonId,
+                Title = q.Title,
+                PassingScorePercent = q.PassingScorePercent,
+                TimeLimitSeconds = q.TimeLimitSeconds,
+                CreatedAt = q.CreatedAt,
+
+                QuizQuestions = q.QuizQuestions
+                    .OrderBy(qq => qq.OrderIndex)
+                    .Select(qq => new QuizQuestionReadDto
                     {
-                        Id = a.Id,
-                        QuestionId = a.QuestionId,
-                        AnswerText = a.AnswerText,
-                        IsCorrect = a.IsCorrect
+                        Id = qq.Id,
+                        QuizId = qq.QuizId,
+                        QuestionId = qq.QuestionId,
+                        Points = qq.Points,
+                        OrderIndex = qq.OrderIndex,
+
+                        QuestionText = qq.Question.QuestionText,
+                        QuestionType = qq.Question.QuestionType,
+
+                        // ✅ FIX: return AnswerOptions, using AnswerText (NOT OptionText)
+                        AnswerOptions = qq.Question.AnswerOptions
+                            .OrderBy(o => o.Id)
+                            .Select(o => new OnlineLearningPlatform.Application.DTOs.Questions.AnswerOptionReadDto
+                            {
+                                Id = o.Id,
+                                QuestionId = o.QuestionId,
+                                AnswerText = o.AnswerText,   // ✅ correct property name
+                                IsCorrect = o.IsCorrect
+                            })
+                            .ToList()
                     })
                     .ToList()
             })
             .FirstOrDefaultAsync();
 
-        return question is null ? NotFound() : Ok(question);
+        return quiz is null ? NotFound() : Ok(quiz);
     }
+
 
     // POST: api/question-banks/{bankId}/questions
     [HttpPost("question-banks/{bankId:int}/questions")]

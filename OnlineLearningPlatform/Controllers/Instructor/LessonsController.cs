@@ -10,12 +10,14 @@ namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
-[Authorize(Roles = "Instructor,Admin")]
 
 public class LessonsController : ControllerBase
 {
     private readonly AppDbContext _db;
     public LessonsController(AppDbContext db) => _db = db;
+
+    [Authorize(Roles = "Student,Instructor,Admin")]
+
 
     // GET: api/courses/{courseId}/lessons
     [HttpGet("courses/{courseId:int}/lessons")]
@@ -41,6 +43,8 @@ public class LessonsController : ControllerBase
 
         return Ok(lessons);
     }
+
+    [Authorize(Roles = "Instructor,Admin")]
 
     // POST: api/courses/{courseId}/lessons
     [HttpPost("courses/{courseId:int}/lessons")]
@@ -85,6 +89,8 @@ public class LessonsController : ControllerBase
         return CreatedAtAction(nameof(GetByCourse), new { courseId }, result);
     }
 
+    [Authorize(Roles = "Instructor,Admin")]
+
     // PUT: api/lessons/{id}
     [HttpPut("lessons/{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] LessonCreateDto dto)
@@ -109,6 +115,9 @@ public class LessonsController : ControllerBase
         await _db.SaveChangesAsync();
         return NoContent();
     }
+
+
+    [Authorize(Roles = "Instructor,Admin")]
 
     // DELETE: api/lessons/{id}
     [HttpDelete("lessons/{id:int}")]

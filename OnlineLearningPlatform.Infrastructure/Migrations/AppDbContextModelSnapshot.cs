@@ -17,12 +17,61 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.1")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AnswerOption", b =>
+            modelBuilder.Entity("LessonAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("LessonAttachments");
+                });
+
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswerSelection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnswerOptionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AttemptAnswerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerOptionId");
+
+                    b.HasIndex("AttemptAnswerId");
+
+                    b.ToTable("AttemptAnswerSelections");
+                });
+
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.AnswerOption", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +96,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("AnswerOptions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswer", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.AttemptAnswer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,30 +133,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("AttemptAnswers");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswerSelection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AnswerOptionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AttemptAnswerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnswerOptionId");
-
-                    b.HasIndex("AttemptAnswerId");
-
-                    b.ToTable("AttemptAnswerSelections");
-                });
-
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Certificate", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Certificate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,7 +163,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Certificates");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Course", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,7 +195,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.CourseEnrollment", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.CourseEnrollment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -199,7 +225,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("CourseEnrollments");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Lesson", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Lesson", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,33 +261,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.LessonAttachment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FileType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LessonId");
-
-                    b.ToTable("LessonAttachments");
-                });
-
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.LessonCompletion", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.LessonCompletion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -287,7 +287,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("LessonCompletions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Question", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Question", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuestionBank", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuestionBank", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,7 +351,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("QuestionBanks");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Quiz", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Quiz", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -364,6 +364,9 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFinal")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("LessonId")
                         .HasColumnType("int");
@@ -388,7 +391,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuizAttempt", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuizAttempt", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -423,7 +426,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("QuizAttempts");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuizQuestion", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuizQuestion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -452,7 +455,7 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("QuizQuestions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.User", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -489,9 +492,39 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AnswerOption", b =>
+            modelBuilder.Entity("LessonAttachment", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Question", "Question")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Lesson", "Lesson")
+                        .WithMany("LessonAttachments")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswerSelection", b =>
+                {
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.AnswerOption", "AnswerOption")
+                        .WithMany()
+                        .HasForeignKey("AnswerOptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.AttemptAnswer", "AttemptAnswer")
+                        .WithMany("AttemptAnswerSelections")
+                        .HasForeignKey("AttemptAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AnswerOption");
+
+                    b.Navigation("AttemptAnswer");
+                });
+
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.AnswerOption", b =>
+                {
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Question", "Question")
                         .WithMany("AnswerOptions")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -500,21 +533,21 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswer", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.AttemptAnswer", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.QuizAttempt", "QuizAttempt")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.QuizAttempt", "QuizAttempt")
                         .WithMany("AttemptAnswers")
                         .HasForeignKey("AttemptId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.Question", "Question")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.AnswerOption", "SelectedAnswerOption")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.AnswerOption", "SelectedAnswerOption")
                         .WithMany()
                         .HasForeignKey("SelectedAnswerOptionId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -526,34 +559,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("SelectedAnswerOption");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswerSelection", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Certificate", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.AnswerOption", "AnswerOption")
-                        .WithMany()
-                        .HasForeignKey("AnswerOptionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("OnlineLearningPlatform.Domain.AttemptAnswer", "AttemptAnswer")
-                        .WithMany("AttemptAnswerSelections")
-                        .HasForeignKey("AttemptAnswerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AnswerOption");
-
-                    b.Navigation("AttemptAnswer");
-                });
-
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Certificate", b =>
-                {
-                    b.HasOne("OnlineLearningPlatform.Domain.Course", "Course")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -564,9 +578,9 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Course", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Course", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany("Courses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -575,15 +589,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.CourseEnrollment", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.CourseEnrollment", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Course", "Course")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Course", "Course")
                         .WithMany("CourseEnrollments")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany("CourseEnrollments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -594,9 +608,9 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Lesson", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Lesson", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Course", "Course")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -605,26 +619,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.LessonAttachment", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.LessonCompletion", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Lesson", "Lesson")
-                        .WithMany("LessonAttachments")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-                });
-
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.LessonCompletion", b =>
-                {
-                    b.HasOne("OnlineLearningPlatform.Domain.Lesson", "Lesson")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Lesson", "Lesson")
                         .WithMany("LessonCompletions")
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -635,9 +638,9 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Question", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Question", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.QuestionBank", "QuestionBank")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.QuestionBank", "QuestionBank")
                         .WithMany("Questions")
                         .HasForeignKey("QuestionBankId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -646,19 +649,19 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("QuestionBank");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuestionBank", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuestionBank", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Course", "Course")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("OnlineLearningPlatform.Domain.Lesson", "Lesson")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Lesson", "Lesson")
                         .WithMany()
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany("QuestionBanks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -671,15 +674,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Quiz", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Quiz", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Course", "Course")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Course", "Course")
                         .WithMany("Quizzes")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.Lesson", "Lesson")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Lesson", "Lesson")
                         .WithMany()
                         .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -689,15 +692,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuizAttempt", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuizAttempt", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Quiz", "Quiz")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Quiz", "Quiz")
                         .WithMany("QuizAttempts")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.User", "User")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -708,15 +711,15 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuizQuestion", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuizQuestion", b =>
                 {
-                    b.HasOne("OnlineLearningPlatform.Domain.Question", "Question")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OnlineLearningPlatform.Domain.Quiz", "Quiz")
+                    b.HasOne("OnlineLearningPlatform.Domain.Models.Quiz", "Quiz")
                         .WithMany("QuizQuestions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -727,12 +730,12 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("Quiz");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.AttemptAnswer", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.AttemptAnswer", b =>
                 {
                     b.Navigation("AttemptAnswerSelections");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Course", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Course", b =>
                 {
                     b.Navigation("CourseEnrollments");
 
@@ -741,36 +744,36 @@ namespace OnlineLearningPlatform.Infrastructure.Migrations
                     b.Navigation("Quizzes");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Lesson", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Lesson", b =>
                 {
                     b.Navigation("LessonAttachments");
 
                     b.Navigation("LessonCompletions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Question", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Question", b =>
                 {
                     b.Navigation("AnswerOptions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuestionBank", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuestionBank", b =>
                 {
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.Quiz", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.Quiz", b =>
                 {
                     b.Navigation("QuizAttempts");
 
                     b.Navigation("QuizQuestions");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.QuizAttempt", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.QuizAttempt", b =>
                 {
                     b.Navigation("AttemptAnswers");
                 });
 
-            modelBuilder.Entity("OnlineLearningPlatform.Domain.User", b =>
+            modelBuilder.Entity("OnlineLearningPlatform.Domain.Models.User", b =>
                 {
                     b.Navigation("CourseEnrollments");
 

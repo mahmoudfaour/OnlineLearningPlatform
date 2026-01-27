@@ -1,4 +1,5 @@
 ﻿using OnlineLearningPlatform.Domain;
+using OnlineLearningPlatform.Application.DTOs.Questions; // ✅ for AnswerOptionReadDto
 using System.ComponentModel.DataAnnotations;
 
 namespace OnlineLearningPlatform.Application.DTOs.Quizzes;
@@ -23,7 +24,9 @@ public class QuizQuestionReadDto
     public int Points { get; set; }
     public int OrderIndex { get; set; }
 
-    // useful for Swagger display
     public string QuestionText { get; set; } = string.Empty;
     public QuestionType QuestionType { get; set; }
+
+    // ✅ ADD THIS so controller can return options
+    public List<AnswerOptionReadDto> AnswerOptions { get; set; } = new();
 }

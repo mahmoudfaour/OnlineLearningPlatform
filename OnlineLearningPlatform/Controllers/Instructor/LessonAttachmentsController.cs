@@ -9,12 +9,13 @@ namespace OnlineLearningPlatform.Controllers.Instructor;
 
 [ApiController]
 [Route("api")]
-[Authorize(Roles = "Instructor,Admin")]
 
 public class LessonAttachmentsController : ControllerBase
 {
     private readonly AppDbContext _db;
     public LessonAttachmentsController(AppDbContext db) => _db = db;
+
+    [Authorize(Roles = "Student,Instructor,Admin")]
 
     // GET: api/lessons/{lessonId}/attachments
     [HttpGet("lessons/{lessonId:int}/attachments")]
@@ -36,6 +37,9 @@ public class LessonAttachmentsController : ControllerBase
 
         return Ok(items);
     }
+
+    [Authorize(Roles = "Instructor,Admin")]
+
 
     // POST: api/lessons/{lessonId}/attachments
     [HttpPost("lessons/{lessonId:int}/attachments")]
@@ -64,6 +68,8 @@ public class LessonAttachmentsController : ControllerBase
             FileType = attachment.FileType
         });
     }
+
+    [Authorize(Roles = "Instructor,Admin")]
 
     // DELETE: api/attachments/{id}
     [HttpDelete("attachments/{id:int}")]

@@ -17,6 +17,9 @@ public class QuizCreateDto
 
     [Range(10, 86400)]
     public int TimeLimitSeconds { get; set; } = 600;
+
+    // ✅ NEW: marks final quiz
+    public bool IsFinal { get; set; } = false;
 }
 
 public class QuizReadDto
@@ -29,6 +32,9 @@ public class QuizReadDto
     public int TimeLimitSeconds { get; set; }
     public DateTime CreatedAt { get; set; }
 
-    // include attached questions
+    // ✅ NEW: tells frontend if this is final quiz
+    public bool IsFinal { get; set; }
+
+    // attached questions
     public List<QuizQuestionReadDto> QuizQuestions { get; set; } = new();
 }

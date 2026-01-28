@@ -14,6 +14,16 @@ import QuizTake from "./pages/student/QuizTake";
 import QuizResult from "./pages/student/QuizResult";
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
+// instructor
+import InstructorCourses from "./pages/instructor/InstructorCourses";
+import CreateCourse from "./pages/instructor/CreateCourse";
+import EditCourse from "./pages/instructor/EditCourse";
+import CourseEnrollments from "./pages/instructor/CourseEnrollments";
+import InstructorLessons from "./pages/instructor/InstructorLessons";
+import InstructorQuizzes from "./pages/instructor/InstructorQuizzes";
+import QuizQuestionsManager from "./pages/instructor/QuizQuestionsManager";
+import QuestionBanks from "./pages/instructor/QuestionBanks";
+import BankQuestions from "./pages/instructor/BankQuestions";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersManagement from "./pages/admin/UsersManagement";
@@ -103,12 +113,31 @@ export default function App() {
           }
         />
 
-        {/* Instructor */}
+        {/* INSTRUCTOR */}
+        <Route path="/instructor/dashboard" element={<InstructorDashboard />} />
+        <Route path="/instructor/courses" element={<InstructorCourses />} />
+        <Route path="/instructor/courses/create" element={<CreateCourse />} />
+        <Route path="/instructor/courses/:id/edit" element={<EditCourse />} />
         <Route
-          path="/instructor/dashboard"
+          path="/instructor/courses/:id/enrollments"
+          element={<CourseEnrollments />}
+        />
+        <Route path="/instructor/lessons" element={<InstructorLessons />} />
+        <Route path="/instructor/quizzes" element={<InstructorQuizzes />} />
+        <Route
+          path="/instructor/quizzes/:quizId/questions"
+          element={<QuizQuestionsManager />}
+        />
+        <Route path="/instructor/question-banks" element={<QuestionBanks />} />
+        <Route
+          path="/instructor/question-banks/:id/questions"
+          element={<BankQuestions />}
+        />
+        <Route
+          path="/instructor/courses/:id/lessons"
           element={
             <RequireAuth role="Instructor">
-              <InstructorDashboard />
+              <InstructorLessons />
             </RequireAuth>
           }
         />

@@ -4,8 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import AuthLayout from "../layouts/AuthLayout";
 
-const API_BASE =
-  (import.meta.env.VITE_API_BASE_URL || "https://localhost:7244").replace(/\/$/, "");
+const API_BASE = (
+  import.meta.env.VITE_API_BASE_URL || "https://localhost:7244"
+).replace(/\/$/, "");
 
 function redirectByRole(role) {
   if (role === "Admin") return "/admin/dashboard";
@@ -37,26 +38,30 @@ export default function LoginPage() {
       const res = await axios.post(
         `${API_BASE}/api/auth/login`,
         { email, password },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
       );
 
       // backend returns: UserId, FullName, Email, Role, Token
-      const { token, role, fullName } = {
+      const { token, role, fullName, userId } = {
         token: res.data.token ?? res.data.Token,
         role: res.data.role ?? res.data.Role,
         fullName: res.data.fullName ?? res.data.FullName,
+        userId: res.data.userId ?? res.data.UserId,
       };
 
       localStorage.setItem("token", token);
       localStorage.setItem("role", role);
       localStorage.setItem("fullName", fullName || "");
+      localStorage.setItem("userId", String(userId || "")); // ✅ add this
 
       nav(redirectByRole(role));
     } catch (error) {
       // 401 => invalid credentials
       const msg =
         error?.response?.data ||
-        (error?.response?.status === 401 ? "Invalid email or password." : "Login failed.");
+        (error?.response?.status === 401
+          ? "Invalid email or password."
+          : "Login failed.");
 
       setErr(typeof msg === "string" ? msg : "Login failed.");
     } finally {
@@ -121,7 +126,11 @@ export default function LoginPage() {
                 </div>
 
                 <div className="col-4">
-                  <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-block"
+                    disabled={loading}
+                  >
                     {loading ? "..." : "Sign In"}
                   </button>
                 </div>

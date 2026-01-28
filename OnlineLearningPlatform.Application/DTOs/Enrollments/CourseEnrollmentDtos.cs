@@ -19,3 +19,15 @@ public class CourseEnrollmentReadDto
     public DateTime EnrolledAt { get; set; }
     public EnrollmentStatus Status { get; set; }
 }
+
+
+public class CourseEnrollmentInstructorReadDto
+{
+    public int Id { get; set; }
+    public int CourseId { get; set; }
+    public int UserId { get; set; }
+    public string StudentName { get; set; } = "";
+    public string StudentEmail { get; set; } = "";
+    public DateTime EnrolledAt { get; set; }
+    public EnrollmentStatus Status { get; set; }
+}

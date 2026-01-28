@@ -1,10 +1,11 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineLearningPlatform.Application.DTOs.Courses;
+using OnlineLearningPlatform.Application.DTOs.Enrollments;
 using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
+using System.Security.Claims;
 
 namespace OnlineLearningPlatform.API.Controllers;
 
@@ -232,4 +233,60 @@ public class CoursesController : ControllerBase
         await _db.SaveChangesAsync();
         return NoContent();
     }
+
+
+    // GET: api/Courses/mine
+    [HttpGet("mine")]
+    [Authorize(Roles = "Instructor,Admin")]
+    public async Task<ActionResult<List<CourseReadDto>>> GetMine()
+    {
+        var userId = GetCurrentUserId();
+
+        var query = _db.Courses.AsNoTracking();
+
+        if (!IsAdmin())
+            query = query.Where(c => c.UserId == userId);
+
+        var courses = await query
+            .OrderByDescending(c => c.CreatedAt)
+            .Select(c => ToReadDto(c))
+            .ToListAsync();
+
+        return Ok(courses);
+    }
+
+
+    // GET: api/Courses/{id}/enrollments
+    [HttpGet("{id:int}/enrollments")]
+    [Authorize(Roles = "Instructor,Admin")]
+    public async Task<ActionResult<List<CourseEnrollmentInstructorReadDto>>> GetEnrollments(int id)
+    {
+        var course = await _db.Courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        if (course is null) return NotFound("Course not found.");
+
+        if (!IsAdmin())
+        {
+            var userId = GetCurrentUserId();
+            if (course.UserId != userId) return Forbid();
+        }
+
+        var enrollments = await _db.CourseEnrollments.AsNoTracking()
+            .Where(e => e.CourseId == id)
+            .OrderByDescending(e => e.EnrolledAt)
+            .Select(e => new CourseEnrollmentInstructorReadDto
+            {
+                Id = e.Id,
+                CourseId = e.CourseId,
+                UserId = e.UserId,
+                StudentName = e.User.FullName,
+                StudentEmail = e.User.Email,
+                EnrolledAt = e.EnrolledAt,
+                Status = e.Status
+            })
+            .ToListAsync();
+
+        return Ok(enrollments);
+    }
+
+
 }

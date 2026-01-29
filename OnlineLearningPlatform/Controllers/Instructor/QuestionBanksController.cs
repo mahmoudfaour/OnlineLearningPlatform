@@ -113,8 +113,41 @@ public class QuestionBanksController : ControllerBase
         var bank = await _db.QuestionBanks.FirstOrDefaultAsync(x => x.Id == id);
         if (bank is null) return NotFound();
 
+        // get all questions in this bank
+        var questionIds = await _db.Questions
+            .Where(q => q.QuestionBankId == id)
+            .Select(q => q.Id)
+            .ToListAsync();
+
+        if (questionIds.Count > 0)
+        {
+            // delete quiz-question links first
+            var links = await _db.QuizQuestions
+                .Where(qq => questionIds.Contains(qq.QuestionId))
+                .ToListAsync();
+
+            _db.QuizQuestions.RemoveRange(links);
+
+            // delete answer options
+            var options = await _db.AnswerOptions
+                .Where(o => questionIds.Contains(o.QuestionId))
+                .ToListAsync();
+
+            _db.AnswerOptions.RemoveRange(options);
+
+            // delete questions
+            var questions = await _db.Questions
+                .Where(q => questionIds.Contains(q.Id))
+                .ToListAsync();
+
+            _db.Questions.RemoveRange(questions);
+        }
+
+        // finally delete bank
         _db.QuestionBanks.Remove(bank);
         await _db.SaveChangesAsync();
+
         return NoContent();
     }
+
 }

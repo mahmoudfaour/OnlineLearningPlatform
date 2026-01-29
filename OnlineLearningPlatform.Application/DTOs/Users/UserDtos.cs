@@ -26,3 +26,33 @@ public class UserReadDto
     public UserRole Role { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+public class AdminUserCreateDto
+{
+    [Required]
+    public string FullName { get; set; } = "";
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = "";
+
+    [Required]
+    public string Password { get; set; } = ""; // plain password from admin
+
+    [Required]
+    public UserRole Role { get; set; } // enum: Admin/Instructor/Student
+}
+
+public class AdminUserUpdateDto
+{
+    [Required]
+    public string FullName { get; set; } = "";
+
+    [Required, EmailAddress]
+    public string Email { get; set; } = "";
+
+    // optional: if empty => keep old password
+    public string? Password { get; set; }
+
+    [Required]
+    public UserRole Role { get; set; }
+}

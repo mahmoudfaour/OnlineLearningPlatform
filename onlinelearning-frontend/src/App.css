@@ -40,3 +40,15 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ===== Auth pages (Login/Register) consistent sizing ===== */
+.login-box,
+.register-box {
+  width: 380px;
+  max-width: 92%;
+}
+
+.register-card-body {
+  padding: 1.25rem;
+}
+

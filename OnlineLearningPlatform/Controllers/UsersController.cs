@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OnlineLearningPlatform.API.Security;
 using OnlineLearningPlatform.Application.DTOs.Users;
-using OnlineLearningPlatform.Domain;
 using OnlineLearningPlatform.Domain.Models;
 using OnlineLearningPlatform.Infrastructure;
 
@@ -9,10 +10,10 @@ namespace OnlineLearningPlatform.API;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _db;
-
     public UsersController(AppDbContext db) => _db = db;
 
     // GET: api/Users
@@ -20,8 +21,8 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(List<UserReadDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<UserReadDto>>> GetAll()
     {
-        var users = await _db.Users
-            .AsNoTracking()
+        var users = await _db.Users.AsNoTracking()
+            .OrderByDescending(u => u.CreatedAt)
             .Select(u => new UserReadDto
             {
                 Id = u.Id,
@@ -41,8 +42,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserReadDto>> GetById(int id)
     {
-        var user = await _db.Users
-            .AsNoTracking()
+        var user = await _db.Users.AsNoTracking()
             .Where(u => u.Id == id)
             .Select(u => new UserReadDto
             {
@@ -61,19 +61,21 @@ public class UsersController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(UserReadDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<UserReadDto>> Create([FromBody] UserCreateDto dto)
+    public async Task<ActionResult<UserReadDto>> Create([FromBody] AdminUserCreateDto dto)
     {
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
 
-        var exists = await _db.Users.AnyAsync(u => u.Email == dto.Email);
+        var email = dto.Email.Trim().ToLowerInvariant();
+
+        var exists = await _db.Users.AnyAsync(u => u.Email.ToLower() == email);
         if (exists) return BadRequest("Email already exists.");
 
         var user = new User
         {
-            FullName = dto.FullName,
-            Email = dto.Email,
-            PasswordHash = dto.PasswordHash, // later you will hash it for real
+            FullName = dto.FullName.Trim(),
+            Email = email,
+            PasswordHash = PasswordHasher.Hash(dto.Password), // ✅ hash
             Role = dto.Role,
             CreatedAt = DateTime.UtcNow
         };
@@ -98,7 +100,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(int id, [FromBody] UserCreateDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] AdminUserUpdateDto dto)
     {
         if (!ModelState.IsValid)
             return ValidationProblem(ModelState);
@@ -106,16 +108,24 @@ public class UsersController : ControllerBase
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return NotFound();
 
-        if (!string.Equals(user.Email, dto.Email, StringComparison.OrdinalIgnoreCase))
+        var email = dto.Email.Trim().ToLowerInvariant();
+
+        // if email changed, ensure uniqueness
+        if (!string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase))
         {
-            var emailUsed = await _db.Users.AnyAsync(u => u.Email == dto.Email);
+            var emailUsed = await _db.Users.AnyAsync(u => u.Email.ToLower() == email && u.Id != id);
             if (emailUsed) return BadRequest("Email already exists.");
         }
 
-        user.FullName = dto.FullName;
-        user.Email = dto.Email;
-        user.PasswordHash = dto.PasswordHash;
+        user.FullName = dto.FullName.Trim();
+        user.Email = email;
         user.Role = dto.Role;
+
+        // ✅ only update password if admin provided one
+        if (!string.IsNullOrWhiteSpace(dto.Password))
+        {
+            user.PasswordHash = PasswordHasher.Hash(dto.Password);
+        }
 
         await _db.SaveChangesAsync();
         return NoContent();

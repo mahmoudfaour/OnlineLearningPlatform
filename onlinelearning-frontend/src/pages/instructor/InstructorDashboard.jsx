@@ -189,12 +189,13 @@ export default function InstructorDashboard() {
                           </td>
                           <td>{students}</td>
                           <td>
-                            <a
-                              href={`/instructor/courses/${id}/edit`}
+                            <Link
+                              to={`/instructor/courses/${id}/edit`}
                               className="btn btn-sm btn-info mr-2"
                             >
                               Edit
-                            </a>
+                            </Link>
+
                             <Link
                               to={`/instructor/courses/${id}/lessons`}
                               className="btn btn-sm btn-secondary"

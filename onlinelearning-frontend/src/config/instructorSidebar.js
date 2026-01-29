@@ -24,4 +24,10 @@ export const instructorSidebarItems = [
     to: "/instructor/question-banks",
     icon: "fas fa-database",
   },
+  {
+  label: "AI Quiz Generator",
+  icon: "fas fa-robot",
+  to: "/instructor/ai-quiz/review",
+}
+,
 ];

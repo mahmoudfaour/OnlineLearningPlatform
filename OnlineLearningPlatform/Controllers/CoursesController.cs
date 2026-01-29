@@ -220,6 +220,7 @@ public class CoursesController : ControllerBase
     }
 
     // DELETE: api/Courses/5  (Admin only)
+    // DELETE: api/Courses/5  (Admin only)
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -229,10 +230,154 @@ public class CoursesController : ControllerBase
         var course = await _db.Courses.FirstOrDefaultAsync(c => c.Id == id);
         if (course is null) return NotFound();
 
-        _db.Courses.Remove(course);
-        await _db.SaveChangesAsync();
-        return NoContent();
+        using var tx = await _db.Database.BeginTransactionAsync();
+
+        try
+        {
+            // 1) Get lesson ids for this course
+            var lessonIds = await _db.Lessons
+                .Where(l => l.CourseId == id)
+                .Select(l => l.Id)
+                .ToListAsync();
+
+            // 2) ===== AI Drafts (Options -> Questions -> Drafts) =====
+            var draftIds = await _db.AiQuizDrafts
+                .Where(d => d.CourseId == id || lessonIds.Contains(d.LessonId))
+                .Select(d => d.Id)
+                .ToListAsync();
+
+            if (draftIds.Count > 0)
+            {
+                var draftQuestionIds = await _db.AiQuizDraftQuestions
+                    .Where(q => draftIds.Contains(q.DraftId))
+                    .Select(q => q.Id)
+                    .ToListAsync();
+
+                if (draftQuestionIds.Count > 0)
+                {
+                    var draftOptions = await _db.AiQuizDraftOptions
+                        .Where(o => draftQuestionIds.Contains(o.DraftQuestionId))
+                        .ToListAsync();
+
+                    _db.AiQuizDraftOptions.RemoveRange(draftOptions);
+
+                    var draftQuestions = await _db.AiQuizDraftQuestions
+                        .Where(q => draftIds.Contains(q.DraftId))
+                        .ToListAsync();
+
+                    _db.AiQuizDraftQuestions.RemoveRange(draftQuestions);
+                }
+
+                var drafts = await _db.AiQuizDrafts
+                    .Where(d => draftIds.Contains(d.Id))
+                    .ToListAsync();
+
+                _db.AiQuizDrafts.RemoveRange(drafts);
+            }
+
+            // 3) ===== QuestionBank -> Questions -> AnswerOptions =====
+            var bankIds = await _db.QuestionBanks
+                .Where(b => b.CourseId == id)
+                .Select(b => b.Id)
+                .ToListAsync();
+
+            if (bankIds.Count > 0)
+            {
+                var questionIds = await _db.Questions
+                    .Where(q => bankIds.Contains(q.QuestionBankId))
+                    .Select(q => q.Id)
+                    .ToListAsync();
+
+                if (questionIds.Count > 0)
+                {
+                    var answerOptions = await _db.AnswerOptions
+                        .Where(a => questionIds.Contains(a.QuestionId))
+                        .ToListAsync();
+
+                    _db.AnswerOptions.RemoveRange(answerOptions);
+
+                    var questions = await _db.Questions
+                        .Where(q => questionIds.Contains(q.Id))
+                        .ToListAsync();
+
+                    _db.Questions.RemoveRange(questions);
+                }
+
+                var banks = await _db.QuestionBanks
+                    .Where(b => bankIds.Contains(b.Id))
+                    .ToListAsync();
+
+                _db.QuestionBanks.RemoveRange(banks);
+            }
+
+            // 4) ===== Quizzes / QuizQuestions (if you have them linked to Course) =====
+            var quizIds = await _db.Quizzes
+                .Where(q => q.CourseId == id)
+                .Select(q => q.Id)
+                .ToListAsync();
+
+            if (quizIds.Count > 0)
+            {
+                var quizQuestions = await _db.QuizQuestions
+                    .Where(qq => quizIds.Contains(qq.QuizId))
+                    .ToListAsync();
+
+                _db.QuizQuestions.RemoveRange(quizQuestions);
+
+                var quizzes = await _db.Quizzes
+                    .Where(q => quizIds.Contains(q.Id))
+                    .ToListAsync();
+
+                _db.Quizzes.RemoveRange(quizzes);
+            }
+
+            // 5) ===== Lesson attachments (if linked by LessonId) =====
+            if (lessonIds.Count > 0)
+            {
+                var attachments = await _db.LessonAttachments
+                    .Where(a => lessonIds.Contains(a.LessonId))
+                    .ToListAsync();
+
+                _db.LessonAttachments.RemoveRange(attachments);
+            }
+
+            // 6) ===== Lessons =====
+            if (lessonIds.Count > 0)
+            {
+                var lessons = await _db.Lessons
+                    .Where(l => lessonIds.Contains(l.Id))
+                    .ToListAsync();
+
+                _db.Lessons.RemoveRange(lessons);
+            }
+
+            // 7) ===== Enrollments =====
+            var enrollments = await _db.CourseEnrollments
+                .Where(e => e.CourseId == id)
+                .ToListAsync();
+
+            _db.CourseEnrollments.RemoveRange(enrollments);
+
+            // 8) ===== Finally Course =====
+            _db.Courses.Remove(course);
+
+            await _db.SaveChangesAsync();
+            await tx.CommitAsync();
+
+            return NoContent();
+        }
+        catch (DbUpdateException ex)
+        {
+            await tx.RollbackAsync();
+            return Conflict(ex.InnerException?.Message ?? ex.Message);
+        }
+        catch (Exception ex)
+        {
+            await tx.RollbackAsync();
+            return StatusCode(500, ex.Message);
+        }
     }
+
 
 
     // GET: api/Courses/mine

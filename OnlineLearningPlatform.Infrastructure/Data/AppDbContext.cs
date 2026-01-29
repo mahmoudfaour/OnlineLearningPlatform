@@ -23,6 +23,12 @@ public class AppDbContext : DbContext
     public DbSet<AttemptAnswerSelection> AttemptAnswerSelections => Set<AttemptAnswerSelection>();
     public DbSet<Certificate> Certificates => Set<Certificate>();
 
+
+    public DbSet<AiQuizDraft> AiQuizDrafts => Set<AiQuizDraft>();
+    public DbSet<AiQuizDraftQuestion> AiQuizDraftQuestions => Set<AiQuizDraftQuestion>();
+    public DbSet<AiQuizDraftOption> AiQuizDraftOptions => Set<AiQuizDraftOption>();
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -223,5 +229,21 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+
+        //drafts used for ai temporary savings
+        modelBuilder.Entity<AiQuizDraft>()
+    .HasMany(d => d.Questions)
+    .WithOne(q => q.Draft)
+    .HasForeignKey(q => q.DraftId)
+    .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AiQuizDraftQuestion>()
+            .HasMany(q => q.Options)
+            .WithOne(o => o.DraftQuestion)
+            .HasForeignKey(o => o.DraftQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }
